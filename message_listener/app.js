@@ -12,6 +12,14 @@ const CMD_EXIT = 'exit';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+const fs = require('fs');//filestream
+const fileName = 'file.txt';
+const newLineChar = process.platform === 'win32' ? '\r\n' : '\n';
+var ourText = "";
+
+// if(fs.access(fileName,))
+
+
 /**
  * Send messages to user (count, interval between messages & jitter)
  * 
@@ -261,9 +269,22 @@ async function runReceiver(result, serverUrl, username, sender) {
                 });
             } else if (msg.cmd === CMD_STOP_SENDER) {
                 process.stderr.write(util.format('[+] Successfully sent %s messages\n', senderResult.msgSuccess))
+                ourText =  JSON.stringify(senderResult);
+                
+                fs.appendFileSync(fileName, `${ourText}${newLineChar}`);//, function(error){
+                // fs.appendFile("what.txt", ourText, function(error){
+                    // if(error) throw error; // если возникла ошибка
+                    // console.log("Асинхронная запись файла завершена.");
+//                    let data = fs.readFileSync("hello.txt", "utf8");
+  //                  console.log(data);  // выводим считанные данные
+                //});
+
                 process.stdout.write(JSON.stringify(senderResult) + '\n');
             } else if (msg.cmd === CMD_STOP_RECEIVER) {
                 process.stderr.write(util.format('[+] Received %s messages\n', receiverResult.msgTotal))
+                ourText =  JSON.stringify(receiverResult);
+                
+                fs.appendFileSync(fileName, `${ourText}${newLineChar}`);
                 process.stdout.write(JSON.stringify(receiverResult) + '\n');
             } else if (msg.cmd === CMD_START_RECEIVER) {
                 process.stderr.write(util.format('[+] %s receives messages from %s\n', msg.cfg.receiver, msg.cfg.sender));
@@ -274,4 +295,13 @@ async function runReceiver(result, serverUrl, username, sender) {
             }
         });
     }
+    
 })();
+
+// fs.writeFile("what.txt", ourText, function(err) {
+//     if(err) {
+//         return console.log(err);
+//     }
+
+//     console.log("The file was saved!");
+// }); 

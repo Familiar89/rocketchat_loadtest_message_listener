@@ -20,7 +20,7 @@ sudo apt-get install apg
 
 b)    Клонируем скрипт с github и переходим в его корневую директорию:
 
-git clone https://github.com/eyetime-international-ltd/rocketchat_loadtest_message_listener.git
+- git clone https://github.com/Familiar89/rocketchat_loadtest_message_listener.git
 
 cd /home/user/rocketchat_loadtest_message_listener
 
@@ -66,7 +66,7 @@ apt-get install python-pip
 
 b)    Клонируем скрипт с github
 
-git clone https://github.com/eyetime-international-ltd/rocketchat_loadtest_message_listener.git
+git clone https://github.com/Familiar89/rocketchat_loadtest_message_listener.git
 
 c)    Переходим в корневую директорию скаченного скрипта:
 
@@ -74,8 +74,9 @@ cd /home/user/rocketchat_loadtest_message_listener
 
 d)    Устанавливаем необходимые пакеты:
 
-npm install
-pip install numpy
+- npm install
+
+- pip install numpy
 
 e)    Копируем файл user_insert_script.js, который загрузили с сервера в папку ~/message_listener/lib
 

@@ -16,27 +16,27 @@ This repository implements a load test for [Rocket.Chat](https://github.com/Rock
 
 a)    Устанавливаем APG.
 
-sudo apt-get install apg
+- sudo apt-get install apg
 
 b)    Клонируем скрипт с github и переходим в его корневую директорию:
 
 - git clone https://github.com/Familiar89/rocketchat_loadtest_message_listener.git
 
-cd /home/user/rocketchat_loadtest_message_listener
+- cd /home/user/rocketchat_loadtest_message_listener
 
 c)    Устанавливаем необходимые пакеты командой:
 
-npm install
+- npm install
 
 d)    Генерируем пользователей (1000 пользователь):
 
-./message_listener/lib/generate-users.sh 1000
+- ./message_listener/lib/generate-users.sh 1000
 
 создаются 2 файла (user_insert_script.js и userdata.js)
 
 e)    Импортируем созданных пользователей в базу RocketChat:
 
-mongo 127.0.0.1/rocketchat ./message_listener/lib/user_insert_script.js
+- mongo 127.0.0.1/rocketchat ./message_listener/lib/user_insert_script.js
 
 f)    Файлы с пользователями (user_insert_script.js и userdata.js) загружаем на тестовый стенд с которого будем запускать тест.
 
@@ -56,21 +56,21 @@ Numpy – так же для запуска python файла, выводяще�
 
 a)    Устанавливаем дополнительное ПО: Node.js, Python-pip.
 
-sudo apt install curl
+- sudo apt install curl
 
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash –
+- curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash –
 
-sudo apt install nodejs
+- sudo apt install nodejs
 
-apt-get install python-pip
+- apt-get install python-pip
 
 b)    Клонируем скрипт с github
 
-git clone https://github.com/Familiar89/rocketchat_loadtest_message_listener.git
+- git clone https://github.com/Familiar89/rocketchat_loadtest_message_listener.git
 
 c)    Переходим в корневую директорию скаченного скрипта:
 
-cd /home/user/rocketchat_loadtest_message_listener
+- cd /home/user/rocketchat_loadtest_message_listener
 
 d)    Устанавливаем необходимые пакеты:
 
@@ -82,7 +82,7 @@ e)    Копируем файл user_insert_script.js, который загру
 
 f)    Выполняем команду:
 
-node message_listener/app.js 0 -i 0.1 -j 0.05 -n 100 -u 1000 -w 5 –s http://your-host-name.com-as-accessed-from-internet/
+- node message_listener/app.js 0 -i 0.1 -j 0.05 -n 100 -u 1000 -w 5 –s http://your-host-name.com-as-accessed-from-internet/
 
 Этой командой мы запускаем 1000 клиентов (500 получателей, 500 отправителей). 
 
@@ -144,6 +144,6 @@ g)    После завершения выполнения скрипта, фо�
 
 h)    Запускаем python файл:
 
-parse_outcome.py <filename>,
+- ./parse_outcome.py <filename>,
   
 filename  - файл сформированный после завершения выполнения js скрипта.

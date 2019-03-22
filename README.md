@@ -94,12 +94,19 @@ node message_listener/app.js 0 -i 0.1 -j 0.05 -n 100 -u 1000 -w 5 –s http://yo
 ## Использование скрипта: apps.js
 
 OFFSET [options]
+
 --help, -h
+
 --message-interval VALUE, -i VALUE
+
 --message-interval-jitter VALUE, -j VALUE
+
 --message-count VALUE, -n VALUE
+
 --server-url VALUE, -s VALUE
+
 --receiver-additional-waiting-time VALUE, -w VALUE
+
 --user-count VALUE, -u VALUE
 
 ## Описание настроек скрипта.

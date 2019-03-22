@@ -2,75 +2,78 @@
 
 This repository implements a load test for [Rocket.Chat](https://github.com/RocketChat).
 
+# Тест Rocket.Chat
+Для тестирования данного скрипта необходимо иметь серверную часть с установленным RocketChat’ом и вторую машину (далее тестовый стенд) с которой будет производиться нагрузочное тестирование.
+Серверная часть.
+Для тестирования RocketChat, предполагается, что серверная часть используется на ОС Server Ubutu 16.10, и установлены: RocketChat, MongoDB, Git и Node.js. 
+Дополнительные приложения на серверной части: APG (automatic password generator) – генератор паролей, используемый для генерации случайных имён пользователей;
+Последовательность действий на серверной части:
+a)	Устанавливаем APG.
+# sudo apt-get install apg
+b)	Клонируем скрипт с github и переходим в его корневую директорию:
+# git clone https://github.com/eyetime-international-ltd/rocketchat_loadtest_message_listener.git
+# cd /home/user/rocketchat_loadtest_message_listener
+c)	Устанавливаем необходимые пакеты командой:
+# npm install
+d)	Генерируем пользователей (1000 пользователь):
+# ./message_listener/lib/generate-users.sh 1000
+создаются 2 файла (user_insert_script.js и userdata.js)
+e)	Импортируем созданных пользователей в базу RocketChat:
+# mongo 127.0.0.1/rocketchat ./message_listener/lib/user_insert_script.js
+f)	Файл с пользователями (user_insert_script.js) загружаем на тестовый стенд с которого будем запускать тест.
+Тестовый стенд.
+Запуск скрипта на тестовом стенде предполагает установленную ОС Ubutu 16.10 или Window OS.
+Дополнительные приложения:
+Node.js – для запуска js файлов.
+Python-pip – для запуска python файла, выводящего результаты;
+Numpy – так же для запуска python файла, выводящего результаты.
 
-## Required Software:
+Последовательность действий на тестовом стенде:
+a)	Устанавливаем дополнительное ПО: Node.js, Python-pip.
+# sudo apt install curl
+# curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash –
+# sudo apt install nodejs
+# apt-get install python-pip
+b)	Клонируем скрипт с github 
+# git clone https://github.com/eyetime-international-ltd/rocketchat_loadtest_message_listener.git
+c)	Переходим в корневую директорию скаченного скрипта:
+# cd /home/user/rocketchat_loadtest_message_listener
+d)	Устанавливаем необходимые пакеты:
+# npm install
+# pip install numpy
+e)	Копируем файл user_insert_script.js, который загрузили с сервера в папку ~/message_listener/lib 
+f)	Выполняем команду:
+# node message_listener/app.js 0 -i 0.1 -j 0.05 -n 100 -u 1000 -w 5 –s http://your-host-name.com-as-accessed-from-internet/
+Этой командой мы запускаем 1000 клиентов (500 получателей, 500 отправителей). Пользователь-отправитель отправляет 100 сообщений с интервалом 0,1 ± 0,05 секунды. Пользователь-получатель будет ждать сообщения, которые должны прийти, до 5 секунд.
+Где: http://your-host-name.com-as-accessed-from-internet/ - ссылка на сервер RocketChat.
 
-- **apg** password generator used for generating random usernames
-- **node**
-- **python-pip** – `apt-get install python-pip` or `brew install 
-python@2`
-- **numpy** - pip install numpy (for the outcome parser)
+Использование скрипта: apps.js
+ OFFSET [options]
+--help, -h
+--message-interval VALUE, -i VALUE 
+--message-interval-jitter VALUE, -j VALUE
+--message-count VALUE, -n VALUE
+--server-url VALUE, -s VALUE
+--receiver-additional-waiting-time VALUE, -w VALUE
+--user-count VALUE, -u VALUE
 
-# Instruction
-## Install required packages
-    npm install
-## Generate random users
-    ./message_listener/lib/generate-users.sh <usercount>
-generates two files, user_insert_script.js for inserting into mongo and userdata.js to have the usernames in the script - every testuser has the PW:test123
+Описание настроек скрипта.
+OFFSET:
+Смещение пользователя (из файла lib/userdata.js), полезно при запуске нескольких экземпляров с одним и тем же набором данных (смещение на N).
+--message-interval, -i:
+Интервал между сообщениями в секундах. По умолчанию равен 1 секунде.
+--message-interval-jitter, -j:
+Случайный джиттер для добавления/вычитания относительно интервала сообщения. По умолчанию равен 0.5 секунды.
+--message-count, -n:
+Количество сообщений, которые должен отправить пользователь-отправитель. Значение по умолчанию: 10 сообщений.
+--server-url, -s:
+URL-адрес RocketChat сервера. По умолчанию задан сервер https://open.rocket.chat/. Обратите внимание, что если для доступа к чату у вас в конце адреса дописывается порт, то сервер задается в формате http://host:port/
+--receiver-additional-waiting-time, -w:
+Время ожидания сообщений (в секундах) после прекращения действий отправителем. По умолчанию: 1 секунда.
+--user-count, -u:
+Количество клиентов, участвующих в тестировании, должно быть кратно двум, т.к. для каждого отправителя должен быть получатель. Значение по умолчанию: 2 пользователя. Значения по умолчанию можно изменить в файле app.js
+g)	После завершения выполнения скрипта, формируется файл с данными которые мы видели в консоли.
+h)	Запускаем python файл:
+# parse_outcome.py <filename>,
+filename  - файл сформированный после завершения выполнения js скрипта.
 
-## Import Users
-Execute newly generated script to import the users on the mongodb shell - 
-    
-    mongo <serverurl>/<database> user_insert_script.js
-
-    Example: mongo 127.0.0.1/meteor ./message_listener/lib/user_insert_script.js
-
-# Execute the test
-Execute the message listener testcase with the following instructions:
-
-## Synopsis
-
-    Usage: apps.js OFFSET [options]
-        --help, -h
-        --message-interval VAL, -i VAL
-        --message-interval-jitter VAL, -j VAL
-        --message-count VAL, -n VAL
-        --server-url VAL, -s VAL
-        --receiver-additional-waiting-time VAL, -w VAL
-        --user-count VAL, -u VAL
-
-
-## Options
-
-    OFFSET:
-        User offset (lib/userdata.js), useful when running multiple instances with the same dataset (offset by N).
-
-    --message-interval, -i:
-        Interval between messages in seconds. Default: 1
-
-    --message-interval-jitter, -j:
-        Random jitter to add/substract from the message interval. Default: 0.5
-
-    --message-count, -n:
-        How many messages the sender should send. Default: 10
-
-    --server-url, -s:
-        RocketChat server url. Default: https://open.rocket.chat/
-
-    --receiver-additional-waiting-time, -w:
-        Time in seconds to wait for messages after the sender has stopped. Default: 1
-    
-    --user-count, -u:
-        How many clients should be started. Must be a multiple of 2 (sender/receiver). Default: 2
-
-
-## Example
-
-    node message_listener/app.js 0 -i 0.1 -j 0.05 -n 10 -u 100 -w 5
-
-Start 100 clients (50 receiver, 50 sender). The sender posts 10 messages at an interval of 0.1 ± 0.05 seconds. The receiver will wait up to 5 seconds for pending messages.
-
-## Results
-The results can be piped to a file an parsed via the parse_outcome.py
-
-    ./parse_outcome.py <filename>
